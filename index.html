@@ -3,246 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Day Films - Asset Inspector</title>
+    <title>Photo Inspector</title>
     <style>
         :root {
-            --bg-dark: #0a0f1d;
-            --card-bg: #141b2f;
-            --input-bg: #0d1326;
-            --accent-orange: #f97316; 
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #1e293b;
-            --color-success: #10b981;
-            --color-error: #ef4444;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --success: #10b981;
+            --error: #ef4444;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 24px;
+            padding: 20px;
         }
 
-        .app-container {
+        .container {
             background-color: var(--card-bg);
             width: 100%;
-            max-width: 500px;
+            max-width: 480px;
             padding: 32px;
             border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
             border: 1px solid var(--border-color);
         }
 
-        header { text-align: center; margin-bottom: 28px; }
-        
-        .brand-logo-area {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        
-        .new-day-logo-svg {
-            width: 180px;
-            height: auto;
-            filter: drop-shadow(0 4px 12px rgba(249, 115, 22, 0.2));
-        }
+        header { text-align: center; margin-bottom: 24px; }
+        header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+        header p { color: var(--text-muted); font-size: 14px; }
 
-        header p { color: var(--text-secondary); font-size: 13px; }
-
-        .field-group { margin-bottom: 20px; }
-        .field-label {
-            display: block;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.75px;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-        }
-
-        .custom-select {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 500;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .upload-click-pad {
+        #drop-zone {
             border: 2px dashed var(--border-color);
-            padding: 45px 20px;
+            padding: 40px 20px;
             border-radius: 16px;
             text-align: center;
-            background: rgba(255, 255, 255, 0.01);
-            margin-bottom: 15px;
             cursor: pointer;
             transition: all 0.2s ease;
-        }
-        .upload-click-pad:hover { 
-            border-color: var(--accent-orange);
-            background: rgba(249, 115, 22, 0.02);
+            background: rgba(255,255,255,0.01);
         }
 
-        .main-upload-text { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
-        .sub-upload-text { color: var(--text-secondary); font-size: 12px; margin-bottom: 14px; }
-
-        .browse-btn {
-            background-color: var(--accent-orange);
-            color: white;
-            border: none;
-            padding: 11px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
+        #drop-zone:hover, #drop-zone.hover {
+            border-color: var(--accent-color);
+            background: rgba(59, 130, 246, 0.04);
         }
 
-        #results-viewport { display: none; margin-top: 28px; }
+        .upload-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
 
-        .media-preview-window {
+        .upload-text { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+        .upload-subtext { color: var(--text-muted); font-size: 12px; }
+
+        #results {
+            display: none;
+            margin-top: 24px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .preview-container {
             width: 100%;
-            height: 180px;
+            height: 160px;
             border-radius: 12px;
+            overflow: hidden;
             margin-bottom: 20px;
             border: 1px solid var(--border-color);
-            background: #060911;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #0b0f19;
         }
-        #img-render { width: 100%; height: 100%; object-fit: contain; }
 
-        .status-pill {
+        #image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .badge {
             display: inline-flex;
             align-items: center;
-            padding: 6px 14px;
+            gap: 6px;
+            padding: 6px 12px;
             border-radius: 100px;
             font-size: 12px;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .status-pill.pass { background: rgba(16, 185, 129, 0.12); color: var(--color-success); border: 1px solid rgba(16, 185, 129, 0.2); }
-        .status-pill.fail { background: rgba(239, 68, 68, 0.12); color: var(--color-error); border: 1px solid rgba(239, 68, 68, 0.2); }
 
-        .meta-stack { display: flex; flex-direction: column; gap: 14px; }
-        .meta-item { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
-        .meta-item:last-child { border-bottom: none; padding-bottom: 0; }
-        .meta-label { color: var(--text-secondary); font-size: 13px; }
-        .meta-val { font-size: 13px; font-weight: 600; }
+        .badge.pass { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .badge.fail { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+
+        .data-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .data-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .data-label { color: var(--text-muted); font-size: 14px; }
+        .data-value { font-size: 14px; font-weight: 600; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
+    <div class="container">
         <header>
-            <div class="brand-logo-area">
-                <svg class="new-day-logo-svg" viewBox="0 0 710 440" xmlns="http://w3.org">
-                    <path d="M 541 292 A 186.2 186.2 0 0 0 169 292 Z" fill="#FFDEB5"/>
-                    <path d="M 533 292 A 178.2 178.2 0 0 0 177 292 Z" fill="#F4A236"/>
-                    <path d="M 521 292 A 166.2 166.2 0 0 0 189 292 Z" fill="#FA7416"/>
-                    <line x1="102" y1="298" x2="608" y2="298" stroke="#FA7416" stroke-width="11" stroke-linecap="round"/>
-                    <g fill="#FA7416" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="52" letter-spacing="11">
-                        <text x="103" y="380">NEW DAY FILMS</text>
-                    </g>
-                </svg>
-            </div>
-            <p>Filmmaker Delivery Blueprint Verification</p>
+            <h1>Photo Inspector</h1>
+            <p>Verify resolutions and requirements instantly</p>
         </header>
 
-        <div class="field-group">
-            <label class="field-label" for="criteria-select">Required Asset Category</label>
-            <select id="criteria-select" class="custom-select">
-                <option value="primary_poster">Primary Poster (1548 × 2193)</option>
-                <option value="horizontal_poster">Horizontal Poster (16:9)</option>
-                <option value="filmmaker_photo">Filmmaker Photo (1548 × 2193)</option>
-                <option value="production_stills">Production Stills (High-Res, 300DPI)</option>
-                <option value="bts_photos">Behind the Scenes Photos (16:9)</option>
-                <option value="film_thumbnail">Film Thumbnail (1920 × 1080, &lt; 2MB)</option>
-            </select>
-        </div>
-
-        <div class="upload-click-pad" id="action-click-box">
-            <div class="main-upload-text">Click Here to Upload Image</div>
-            <div class="sub-upload-text">Select file from local system catalog</div>
-            <button class="browse-btn" id="trigger-btn">Select Asset</button>
+        <div id="drop-zone">
+            <span class="upload-icon">📷</span>
+            <div class="upload-text">Drag & drop your image</div>
+            <div class="upload-subtext">or click to browse local files</div>
         </div>
         
-        <input type="file" id="secure-file-input" style="display: none;" accept="image/*">
+        <input type="file" id="file-input" accept="image/*" style="display: none;">
 
-        <div id="results-viewport">
-            <div class="media-preview-window">
-                <img id="img-render" src="" alt="Preview">
+        <div id="results">
+            <div class="preview-container">
+                <img id="image-preview" src="" alt="Preview">
             </div>
 
-            <div id="evaluation-pill" class="status-pill"></div>
+            <div id="status-badge" class="badge"></div>
 
-            <div class="meta-stack">
-                <div class="meta-item"><span class="meta-label">File Context</span><span class="meta-val" id="val-filename">-</span></div>
-                <div class="meta-item"><span class="meta-label">Storage Footprint</span><span class="meta-val" id="val-filesize">-</span></div>
-                <div class="meta-item"><span class="meta-label">Pixel Map</span><span class="meta-val" id="val-dimensions">-</span></div>
-                <div class="meta-item"><span class="meta-label">Aspect Structure</span><span class="meta-val" id="val-ratio">-</span></div>
-                <div class="meta-item"><span class="meta-label">Target Standard</span><span class="meta-val" id="val-requirement" style="color: var(--text-secondary);">-</span></div>
+            <div class="data-grid">
+                <div class="data-row">
+                    <span class="data-label">Dimensions</span>
+                    <span class="data-value" id="dimensions">-</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Aspect Ratio</span>
+                    <span class="data-value" id="ratio">-</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Target Criteria</span>
+                    <span class="data-value" style="color: var(--text-muted);">Min. 1200 × 800px</span>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Completely prevent the browser from opening the file full screen on drag/drop actions
-        window.addEventListener("dragover", function(e) { e.preventDefault(); }, false);
-        window.addEventListener("drop", function(e) { e.preventDefault(); }, false);
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const results = document.getElementById('results');
+        const imgPreview = document.getElementById('image-preview');
 
-        var box = document.getElementById("action-click-box");
-        var input = document.getElementById("secure-file-input");
-        var select = document.getElementById("criteria-select");
-        var view = document.getElementById("results-viewport");
-        var render = document.getElementById("img-render");
+        const MIN_WIDTH = 1200;
+        const MIN_HEIGHT = 800;
 
-        var ruleset = {
-            primary_poster: { exactW: 1548, exactH: 2193 },
-            horizontal_poster: { ratioW: 16, ratioH: 9 },
-            filmmaker_photo: { exactW: 1548, exactH: 2193 },
-            production_stills: { minW: 1920, note: "Keep uncropped / 300dpi / RGB" },
-            bts_photos: { ratioW: 16, ratioH: 9, note: "16:9 or Film Ratio Match" },
-            film_thumbnail: { exactW: 1920, exactH: 1080, maxBytes: 2000000 }
-        };
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
 
-        select.addEventListener("change", function() {
-            input.value = "";
-            view.style.display = "none";
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('hover'); });
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('hover'));
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('hover');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
         });
 
-        box.addEventListener("click", function() { 
-            input.click(); 
-        });
-        
-        input.addEventListener("change", function(e) { 
-            if (e.target.files.length) {
-                processFile(e.target.files[0]); 
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) return alert('Please upload an image file.');
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                imgPreview.src = event.target.result;
+                
+                const img = new Image();
+                img.onload = function() {
+                    analyzeImage(img.width, img.height);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function analyzeImage(width, height) {
+            const gcd = (a, b) => b ? gcd(b, a % b) : a;
+            const divisor = gcd(width, height);
+            const aspectWritable = `${width / divisor}:${height / divisor}`;
+
+            const isPassing = width >= MIN_WIDTH && height >= MIN_HEIGHT;
+
+            document.getElementById('dimensions').innerText = `${width} × ${height} px`;
+            document.getElementById('ratio').innerText = aspectWritable;
+            
+            const badge = document.getElementById('status-badge');
+            if (isPassing) {
+                badge.innerText = "✓ Passed Requirements";
+                badge.className = "badge pass";
+            } else {
+                badge.innerText = "✕ Failed Requirements";
+                badge.className = "badge fail";
             }
-        });
 
-        function processFile(targetFile) {
-            if (!targetFile || !targetFile.type.startsWith("image/")) {
-                alert("Please select a valid image file.");
-                return;
-            }
-
-            var activeKey = select.value;
-            var activeRules = ruleset[activeKey];
-
-            document.getElementById("val-filename").innerText = targetFile.name;
-
+            results.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
 
