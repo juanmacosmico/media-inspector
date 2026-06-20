@@ -9,8 +9,7 @@
             --bg-dark: #0a0f1d;
             --card-bg: #141b2f;
             --input-bg: #0d1326;
-            --accent-orange: #f97316; /* New Day Signature Tone */
-            --accent-blue: #3b82f6;
+            --accent-orange: #f97316; 
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --border-color: #1e293b;
@@ -43,20 +42,18 @@
 
         header { text-align: center; margin-bottom: 28px; }
         
-        /* Brand Identity Integration */
+        /* Official Logo Container */
         .brand-logo-area {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 12px;
-            gap: 10px;
+            margin-bottom: 16px;
         }
         
-        .sun-vector {
-            width: 32px;
-            height: 32px;
-            fill: var(--accent-orange);
-            filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.4));
+        .new-day-logo-svg {
+            width: 180px;
+            height: auto;
+            filter: drop-shadow(0 4px 12px rgba(249, 115, 22, 0.2));
         }
 
         header h1 { 
@@ -65,7 +62,6 @@
             letter-spacing: -0.5px; 
             margin-bottom: 4px; 
         }
-        
         header p { color: var(--text-secondary); font-size: 13px; }
 
         .field-group { margin-bottom: 20px; }
@@ -90,41 +86,37 @@
             font-weight: 500;
             outline: none;
             cursor: pointer;
-            transition: border-color 0.2s;
-        }
-        .custom-select:focus {
-            border-color: var(--accent-orange);
         }
 
-        #drop-zone {
+        .upload-click-pad {
             border: 2px dashed var(--border-color);
-            padding: 35px 20px;
+            padding: 45px 20px;
             border-radius: 16px;
             text-align: center;
             background: rgba(255, 255, 255, 0.01);
             margin-bottom: 15px;
+            cursor: pointer;
             transition: all 0.2s ease;
         }
-        #drop-zone.drag-over { 
-            border-color: var(--accent-orange); 
-            background: rgba(249, 115, 22, 0.03); 
+        .upload-click-pad:hover { 
+            border-color: var(--accent-orange);
+            background: rgba(249, 115, 22, 0.02);
         }
 
-        .main-upload-text { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-        .sub-upload-text { color: var(--text-secondary); font-size: 12px; margin-bottom: 12px; }
+        .main-upload-text { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+        .sub-upload-text { color: var(--text-secondary); font-size: 12px; margin-bottom: 14px; }
 
         .browse-btn {
             background-color: var(--accent-orange);
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 11px 24px;
             border-radius: 8px;
             font-weight: 600;
             font-size: 13px;
             cursor: pointer;
-            transition: background 0.2s;
+            pointer-events: none; 
         }
-        .browse-btn:hover { background-color: #ea580c; }
 
         #results-viewport { display: none; margin-top: 28px; }
 
@@ -165,13 +157,22 @@
     <div class="app-container">
         <header>
             <div class="brand-logo-area">
-                <!-- Custom Inline Scalable Sun Vector Icon representing New Day Films -->
-                <svg class="sun-vector" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5"/>
-                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="#f97316" stroke-width="2" stroke-linecap="round"/>
+                <!-- EXACT REPRODUCTION OF THE PROVIDED NEW DAY FILMS LOGO AS LIVE WEB CODE -->
+                <svg class="new-day-logo-svg" viewBox="0 0 710 440" xmlns="http://w3.org">
+                    <!-- Outer Light Cream Highlight Arch Ring -->
+                    <path d="M 541 292 A 186.2 186.2 0 0 0 169 292 Z" fill="#FFDEB5"/>
+                    <!-- Mid Orange Core Arch Ring -->
+                    <path d="M 533 292 A 178.2 178.2 0 0 0 177 292 Z" fill="#F4A236"/>
+                    <!-- Inner Deep Orange Core Sun Body -->
+                    <path d="M 521 292 A 166.2 166.2 0 0 0 189 292 Z" fill="#FA7416"/>
+                    <!-- Horizontal Base Ground Foundation Divider Line -->
+                    <line x1="102" y1="298" x2="608" y2="298" stroke="#FA7416" stroke-width="11" stroke-linecap="round"/>
+                    <!-- Perfectly Aligned, Scalable Geometric Brand Typeface Structure -->
+                    <g fill="#FA7416" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="52" letter-spacing="11">
+                        <text x="103" y="380">NEW DAY FILMS</text>
+                    </g>
                 </svg>
             </div>
-            <h1>New Day Films</h1>
             <p>Filmmaker Delivery Blueprint Verification</p>
         </header>
 
@@ -187,10 +188,10 @@
             </select>
         </div>
 
-        <div id="drop-zone">
-            <div class="main-upload-text">Drag & Drop Image Asset Here</div>
-            <div class="sub-upload-text">or choose from local storage</div>
-            <button class="browse-btn" id="trigger-btn">Select Asset</button>
+        <div class="upload-click-pad" id="action-click-box">
+            <div class="main-upload-text">Click Here to Upload Image</div>
+            <div class="sub-upload-text">Select file from local system catalog</div>
+            <button class="browse-btn">Select Asset</button>
         </div>
         
         <input type="file" id="secure-file-input" style="display: none;" accept="image/*">
@@ -213,13 +214,11 @@
     </div>
 
     <script>
-        // High-level absolute override to prevent native file dropping loops over live HTTPS environments
         window.addEventListener('dragover', e => e.preventDefault(), false);
         window.addEventListener('drop', e => e.preventDefault(), false);
 
-        const dropZone = document.getElementById('drop-zone');
+        const actionClickBox = document.getElementById('action-click-box');
         const fileInput = document.getElementById('secure-file-input');
-        const triggerBtn = document.getElementById('trigger-btn');
         const criteriaSelect = document.getElementById('criteria-select');
         const resultsViewport = document.getElementById('results-viewport');
         const imgRender = document.getElementById('img-render');
@@ -238,7 +237,4 @@
             resultsViewport.style.display = 'none';
         });
 
-        triggerBtn.addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
-        fileInput.addEventListener('change', e => { if (e.target.files.length) processFile(e.target.files); });
 
-        dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
