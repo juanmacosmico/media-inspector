@@ -42,7 +42,6 @@
 
         header { text-align: center; margin-bottom: 28px; }
         
-        /* Official Logo Container */
         .brand-logo-area {
             display: flex;
             justify-content: center;
@@ -56,12 +55,6 @@
             filter: drop-shadow(0 4px 12px rgba(249, 115, 22, 0.2));
         }
 
-        header h1 { 
-            font-size: 22px; 
-            font-weight: 700; 
-            letter-spacing: -0.5px; 
-            margin-bottom: 4px; 
-        }
         header p { color: var(--text-secondary); font-size: 13px; }
 
         .field-group { margin-bottom: 20px; }
@@ -115,7 +108,6 @@
             font-weight: 600;
             font-size: 13px;
             cursor: pointer;
-            pointer-events: none; 
         }
 
         #results-viewport { display: none; margin-top: 28px; }
@@ -157,17 +149,11 @@
     <div class="app-container">
         <header>
             <div class="brand-logo-area">
-                <!-- EXACT REPRODUCTION OF THE PROVIDED NEW DAY FILMS LOGO AS LIVE WEB CODE -->
                 <svg class="new-day-logo-svg" viewBox="0 0 710 440" xmlns="http://w3.org">
-                    <!-- Outer Light Cream Highlight Arch Ring -->
                     <path d="M 541 292 A 186.2 186.2 0 0 0 169 292 Z" fill="#FFDEB5"/>
-                    <!-- Mid Orange Core Arch Ring -->
                     <path d="M 533 292 A 178.2 178.2 0 0 0 177 292 Z" fill="#F4A236"/>
-                    <!-- Inner Deep Orange Core Sun Body -->
                     <path d="M 521 292 A 166.2 166.2 0 0 0 189 292 Z" fill="#FA7416"/>
-                    <!-- Horizontal Base Ground Foundation Divider Line -->
                     <line x1="102" y1="298" x2="608" y2="298" stroke="#FA7416" stroke-width="11" stroke-linecap="round"/>
-                    <!-- Perfectly Aligned, Scalable Geometric Brand Typeface Structure -->
                     <g fill="#FA7416" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="52" letter-spacing="11">
                         <text x="103" y="380">NEW DAY FILMS</text>
                     </g>
@@ -191,7 +177,7 @@
         <div class="upload-click-pad" id="action-click-box">
             <div class="main-upload-text">Click Here to Upload Image</div>
             <div class="sub-upload-text">Select file from local system catalog</div>
-            <button class="browse-btn">Select Asset</button>
+            <button class="browse-btn" id="trigger-btn">Select Asset</button>
         </div>
         
         <input type="file" id="secure-file-input" style="display: none;" accept="image/*">
@@ -214,16 +200,17 @@
     </div>
 
     <script>
-        window.addEventListener('dragover', e => e.preventDefault(), false);
-        window.addEventListener('drop', e => e.preventDefault(), false);
+        // Completely prevent the browser from opening the file full screen on drag/drop actions
+        window.addEventListener("dragover", function(e) { e.preventDefault(); }, false);
+        window.addEventListener("drop", function(e) { e.preventDefault(); }, false);
 
-        const actionClickBox = document.getElementById('action-click-box');
-        const fileInput = document.getElementById('secure-file-input');
-        const criteriaSelect = document.getElementById('criteria-select');
-        const resultsViewport = document.getElementById('results-viewport');
-        const imgRender = document.getElementById('img-render');
+        var box = document.getElementById("action-click-box");
+        var input = document.getElementById("secure-file-input");
+        var select = document.getElementById("criteria-select");
+        var view = document.getElementById("results-viewport");
+        var render = document.getElementById("img-render");
 
-        const pipelineRules = {
+        var ruleset = {
             primary_poster: { exactW: 1548, exactH: 2193 },
             horizontal_poster: { ratioW: 16, ratioH: 9 },
             filmmaker_photo: { exactW: 1548, exactH: 2193 },
@@ -232,9 +219,30 @@
             film_thumbnail: { exactW: 1920, exactH: 1080, maxBytes: 2000000 }
         };
 
-        criteriaSelect.addEventListener('change', () => {
-            fileInput.value = "";
-            resultsViewport.style.display = 'none';
+        select.addEventListener("change", function() {
+            input.value = "";
+            view.style.display = "none";
         });
+
+        box.addEventListener("click", function() { 
+            input.click(); 
+        });
+        
+        input.addEventListener("change", function(e) { 
+            if (e.target.files.length) {
+                processFile(e.target.files[0]); 
+            }
+        });
+
+        function processFile(targetFile) {
+            if (!targetFile || !targetFile.type.startsWith("image/")) {
+                alert("Please select a valid image file.");
+                return;
+            }
+
+            var activeKey = select.value;
+            var activeRules = ruleset[activeKey];
+
+            document.getElementById("val-filename").innerText = targetFile.name;
 
 
